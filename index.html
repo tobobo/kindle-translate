@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8.2.1/dist/polyfill.min.js" integrity="sha256-TD3YvNcsxYSs5P8Apq+OhyYdRyP5VePdLXVVyUzPMd8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js" integrity="sha256-+pQdxwAcHJdQ3e/9S4RK6g8ZkwdMgFQuHvLuN5uyk5c=" crossorigin="anonymous"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        font: menu;
+        font-size: 72px;
+      }
+      
+      input, button {
+        display: block;
+        font: inherit;
+        font-size: inherit;
+      }
+      
+      input {
+        width: 100%;
+      }
+    
+      button {
+        width: 100%;
+      }
+      
+      iframe {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="translation-form">
+      <input name="translation" id="text">
+      <button id="translate-button">Translate</button>
+    </form>
+    <div id="result"></div>
+  </body>
+  <script type="text/javascript">
+    document.getElementById('translation-form').onsubmit = function(e) {
+      e.preventDefault();
+      const result = fetch('/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: document.getElementById('text').value,
+          options: {
+            from: 'es',
+            to: 'en',
+          },
+        }),
+      }).then(function (result) {
+        return result.json();
+      }).then(function (response) {
+        document.getElementById('result').innerHTML = response.data.translations[0].translatedText;
+      });
+
+      return false;
+    };
+  </script>
+</html>
