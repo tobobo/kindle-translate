@@ -17,11 +17,7 @@
         font-size: inherit;
       }
       
-      input {
-        width: 100%;
-      }
-    
-      button {
+      input, button {
         width: 100%;
       }
       
@@ -29,16 +25,31 @@
         width: 100%;
         height: 100%;
       }
+
+      button#clear {
+        position: absolute;
+        width: auto;
+        background-color: transparent;
+        border: 0;
+        right: 0;
+        top: 0;
+        opacity: 0.5;
+        display: none;
+      }
     </style>
   </head>
   <body>
     <form id="translation-form">
-      <input name="translation" id="text">
-      <button id="translate-button">Translate</button>
+      <input name="translation" id="text" placeholder="enter text...">
+      <button type="button" id="clear">×</button>
     </form>
     <div id="result"></div>
   </body>
   <script type="text/javascript">
+    const textInput = document.getElementById('text');
+    const clearButton = document.getElementById('clear');
+    const resultEl = document.getElementById('result');
+
     document.getElementById('translation-form').onsubmit = function(e) {
       e.preventDefault();
       const result = fetch('/api/translate', {
@@ -47,7 +58,7 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: document.getElementById('text').value,
+          text: textInput.value,
           options: {
             from: 'es',
             to: 'en',
@@ -56,10 +67,26 @@
       }).then(function (result) {
         return result.json();
       }).then(function (response) {
-        document.getElementById('result').innerHTML = response.data.translations[0].translatedText;
+        debugger;
+        resultEl.innerHTML = response.data.translations[0].translatedText;
       });
 
       return false;
     };
+
+    textInput.oninput = function() {
+      if (textInput.value.length > 0) {
+        clearButton.style.display = 'block';
+      } else {
+        clearButton.style.display = 'none';
+      }
+    };
+
+    clearButton.onclick = function() {
+      textInput.value = '';
+      resultEl.innerHTML = '';
+      clearButton.style.display = 'none';
+      textInput.focus();
+    }
   </script>
 </html>
